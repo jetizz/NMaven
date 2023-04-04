@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<_NMaven_TaskFolder>$(MSBuildThisFileDirectory)..\tasks\netstandard2.0</_NMaven_TaskFolder>
+		<NMavenAssembly>$(_NMaven_TaskFolder)\$(MSBuildThisFileName).dll</NMavenAssembly>
+	</PropertyGroup>
+
+	<UsingTask TaskName="$(MSBuildThisFileName).RestoreMavenArtifacts" AssemblyFile="$(NMavenAssembly)"/>
+
+	<PropertyGroup>
+		<NMavenPackageRoot Condition="'$(NMavenPackageRoot)' == ''">$(NuGetPackageRoot)..\..\.nmvn\packages</NMavenPackageRoot>
+	</PropertyGroup>
+</Project>
