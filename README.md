@@ -31,6 +31,10 @@ The `Files` metadata is used to select the files to deploy to the project from w
 
 The `Destination` metadata simply indicates the destination folder within the .NET project.
 
+Optional parameter `PreserveFolderStructure` (default `false`) can be set to `true` to preserve the folder structure of the files within the jar file during deployment.
+
+Optional parameter `RemoveRelativePath` (default `false`) can be set to `true` to remove the relative in relation to `Files` path of the files within the jar file during deployment. Value is ignored if `PreserveFolderStructure` is not used.
+
 
 # NMaven.Example
 
