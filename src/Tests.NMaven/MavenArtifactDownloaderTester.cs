@@ -69,6 +69,56 @@ namespace Tests.NMaven
         }
 
         [Test]
+        public async Task ShouldRedownloadArtifactsWhenOverwrite()
+        {
+            var repository = ModelFactory.CreateMavenRepository("Maven-Repo", "https://repo1.maven.org/maven2");
+            var reference = ModelFactory.CreateMavenReference("commons-compress", "org.apache.commons", "1.23.0", overwrite: true);
+
+            var logger = new Mock<ITaskLogger>();
+
+            PackageRootInfo.Create();
+            var packageFolder = PackageRootInfo
+                .CreateSubdirectory(reference.ArtifactId)
+                .CreateSubdirectory(reference.Version);
+
+            // Create dummy file (but correct name). We'll assert that file size is not == 1 after download.
+            File.WriteAllBytes(Path.Combine(packageFolder.FullName, "commons-compress-1.23.0.jar"), new byte[1] { 42 });
+
+            using var downloader = new MavenArtifactDownloader(logger.Object, PackageRootInfo, repository);
+
+            (await downloader.DownloadArtifactAsync(reference)).Should().BeTrue();
+
+            PackageRootInfo.Exists.Should().BeTrue();
+            PackageRootInfo.GetFiles(reference.ArtifactFileName, SearchOption.AllDirectories).Should().NotBeEmpty();
+            PackageRootInfo.GetFiles(reference.ArtifactFileName, SearchOption.AllDirectories).First().Length.Should().NotBe(1);
+        }
+
+        [Test]
+        public async Task ShouldNotRedownloadArtifactsWhenNotOverwrite()
+        {
+            var repository = ModelFactory.CreateMavenRepository("Maven-Repo", "https://repo1.maven.org/maven2");
+            var reference = ModelFactory.CreateMavenReference("commons-compress", "org.apache.commons", "1.23.0", overwrite: false);
+
+            var logger = new Mock<ITaskLogger>();
+
+            PackageRootInfo.Create();
+            var packageFolder = PackageRootInfo
+                .CreateSubdirectory(reference.ArtifactId)
+                .CreateSubdirectory(reference.Version);
+
+            // Create dummy file (but correct name). We'll assert that file size is not == 1 after download.
+            File.WriteAllBytes(Path.Combine(packageFolder.FullName, "commons-compress-1.23.0.jar"), new byte[1] { 42 });
+
+            using var downloader = new MavenArtifactDownloader(logger.Object, PackageRootInfo, repository);
+
+            (await downloader.DownloadArtifactAsync(reference)).Should().BeTrue();
+
+            PackageRootInfo.Exists.Should().BeTrue();
+            PackageRootInfo.GetFiles(reference.ArtifactFileName, SearchOption.AllDirectories).Should().NotBeEmpty();
+            PackageRootInfo.GetFiles(reference.ArtifactFileName, SearchOption.AllDirectories).First().Length.Should().Be(1);
+        }
+
+        [Test]
         public async Task ShouldFailDownloadFakeArtifacts()
         {
             var repository = ModelFactory.CreateMavenRepository("Maven-Repo", "https://repo1.maven.org/maven2");
