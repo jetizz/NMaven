@@ -1,3 +1,14 @@
+## Note
+This is a fork of the original NMaven project by Florian Harreau. The original project can be found [here](https://github.com/fharr/NMaven). Features were added to satisfy project requirements and had to be available immediately. 
+If/when changes are merged upstream, this fork may become obsolete.
+- Original package: https://www.nuget.org/packages/NMaven
+- Forked package: https://www.nuget.org/packages/NMavenEx
+
+This version of the package will be not be listed on nuget to avoid confusion, but available via:
+```
+Install-Package NMavenEx -Version 0.2.0
+```
+
 # NMaven
 NMaven is a package containing a MSBuild task allowing to download maven artifact at build time. 
 

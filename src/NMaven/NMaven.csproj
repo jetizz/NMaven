@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Title>NMaven</Title>
+		<Title>NMavenEx</Title>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<Description>A MSBuild task allowing to download maven artifact at build time.</Description>
 		<PackageProjectUrl></PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/fharr/NMaven</RepositoryUrl>
+		<RepositoryUrl>https://github.com/jetizz/NMaven</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Maven;MSBuild</PackageTags>
 		<GenerateDependencyFile>true</GenerateDependencyFile>
@@ -16,7 +16,7 @@
 		<BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
 		<NoWarn>NU5100;NU5128</NoWarn>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Authors>Florian Harreau</Authors>
+		<Authors>Florian Harreau, Kresimir Jelic</Authors>
 	</PropertyGroup>
 
 	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
