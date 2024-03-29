@@ -55,17 +55,38 @@ namespace NMaven
         {
             try
             {
-                var destination = Directory.CreateDirectory(deployment.Destination);
+                var destinationRoot = Directory.CreateDirectory(deployment.Destination);
 
-                _logger.LogMessage($"Deploying {deployment.Name} for artifact {deployment.ArtifactId} into {destination.FullName}.");
+                _logger.LogMessage($"Deploying {deployment.Name} for artifact {deployment.ArtifactId} into {destinationRoot.FullName}.");
 
+                // This is directory name inside the package.
+                var filesSubdirectory = Path.GetDirectoryName(deployment.Files);
+                // All files that should be deployed (copied)
                 var files = packageDirectory.GetFiles(deployment.Files, SearchOption.AllDirectories);
 
                 foreach (var file in files)
                 {
-                    _logger.LogMessage($"- Copying {file.FullName}");
+                    DirectoryInfo destinationDirectory = destinationRoot;
+                    if (deployment.PreserveFolderStructure)
+                    {
+                        var relativePath = file.DirectoryName.Substring(packageDirectory.FullName.Length).TrimStart('\\', '/');
+                        // If 'Files' was specified using a folder name, we need to remove it from the relative path too.
+                        if (deployment.RemoveRelativePath && filesSubdirectory.Length > 0)
+                        {
+                            relativePath = relativePath.Substring(filesSubdirectory.Length).TrimStart('\\', '/');
+                        }
+                        // It might still be root - so avoid CreateSubdirectory as it'll break on empty string parameter.
+                        if (relativePath != string.Empty)
+                        {
+                            destinationDirectory = destinationRoot.CreateSubdirectory(relativePath);
+                        }
+                    }
 
-                    File.Copy(file.FullName, Path.Combine(deployment.Destination, file.Name), true);
+                    var destinationFileName = Path.Combine(destinationDirectory.FullName, file.Name);
+
+                    _logger.LogMessage($"- Copying {file.FullName} -> {destinationFileName}");
+
+                    File.Copy(file.FullName, destinationFileName, overwrite: true);
                 }
             }
             catch (Exception ex)
