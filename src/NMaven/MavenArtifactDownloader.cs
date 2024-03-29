@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using NMaven.Logging;
 using NMaven.Model;
@@ -67,10 +68,17 @@ namespace NMaven
         private async Task<byte[]> DownloadArtifactAsync(MavenReference reference, MavenRepository repository)
         {
             var url = reference.GetRepositoryUrl(repository);
+            var auth = repository.GetBasicAuthorizationHeader();
 
             _logger.LogMessage($"Downloading reference {reference.ArtifactId} ({reference.GroupId}) in version {reference.Version}");
 
-            var response = await _httpClient.GetAsync(url);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+            if (auth != null)
+            {
+                _logger.LogMessage($"Using authorization: Basic {auth}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", auth);
+            }
+            var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
