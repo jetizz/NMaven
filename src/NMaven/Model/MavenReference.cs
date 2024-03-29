@@ -12,6 +12,10 @@ namespace NMaven.Model
         public string ArtifactId => this.GetItemMetadata("Identity");
         public string GroupId => this.GetItemMetadata();
         public string Version => this.GetItemMetadata();
+        /// <summary>
+        /// When <c>true</c>, the artifact will be redownloaded and overwritten if it already exists on disk.
+        /// </summary>
+        public bool Overwrite => bool.TryParse(this.GetItemMetadata(), out var b) && b;
 
         public string ArtifactFileName => $"{this.ArtifactId}-{this.Version}.jar";
 

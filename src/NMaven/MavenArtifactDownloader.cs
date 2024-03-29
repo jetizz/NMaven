@@ -35,8 +35,18 @@ namespace NMaven
 
             if (artifactFileInfo.Exists)
             {
-                _logger.LogMessage($"Artifact {reference.ArtifactId} already downloaded on disk. Skipping download.");
-                return true;
+                if (reference.Overwrite)
+                {
+                    // Delete local file and proceed as if it didn't exist
+                    _logger.LogMessage($"Artifact {reference.ArtifactId} already downloaded on disk. Overwriting.");
+                    artifactFileInfo.Delete();
+                }
+                else
+                {
+                    // File already exists, no-op
+                    _logger.LogMessage($"Artifact {reference.ArtifactId} already downloaded on disk. Skipping download.");
+                    return true;
+                }
             }
 
             foreach (var repository in _repositories)
