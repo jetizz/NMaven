@@ -4,6 +4,7 @@
 		<Title>NMavenEx</Title>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<Description>A MSBuild task allowing to download maven artifact at build time.</Description>
+		<PackageId>NMavenEx</PackageId>
 		<PackageProjectUrl></PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/jetizz/NMaven</RepositoryUrl>
@@ -36,11 +37,11 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
-		<None Include="Build\NMaven.props">
+		<None Include="Build\NMavenEx.props">
 			<Pack>True</Pack>
 			<PackagePath>\build</PackagePath>
 		</None>
-		<None Include="Build\NMaven.targets">
+		<None Include="Build\NMavenEx.targets">
 			<Pack>True</Pack>
 			<PackagePath>\build</PackagePath>
 		</None>
