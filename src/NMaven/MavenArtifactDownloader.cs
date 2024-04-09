@@ -21,7 +21,10 @@ namespace NMaven
             _repositories = repositories;
             _nmvnPackageRoot = nmvnPackageRoot;
 
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+            });
         }
 
         public void Dispose()
