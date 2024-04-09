@@ -88,6 +88,8 @@ namespace NMaven
                 _logger.LogMessage($"Using authorization: Basic {auth}");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Basic", auth);
             }
+
+            _logger.LogMessage($"Downloading artifact from: {url}");
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
