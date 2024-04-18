@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -22,6 +23,8 @@ namespace NMaven
         [Required]
         public ITaskItem[] NMavenDeployments { get; set; }
 
+        public List<string> DeployedFiles { get; set; }
+
         public override bool Execute()
         {
             try
@@ -41,7 +44,11 @@ namespace NMaven
                     {
                         if (artifactDownloader.DownloadArtifactAsync(reference).GetAwaiter().GetResult())
                         {
-                            artifactDeployer.Deploy(reference);
+                            var deployedFiles = artifactDeployer.Deploy(reference);
+
+                            if (DeployedFiles == null)
+                                DeployedFiles = new List<string>();
+                            DeployedFiles.AddRange(deployedFiles);
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -20,17 +21,23 @@ namespace NMaven
             _nmvnPackageRoot = nmvnPackageRoot;
         }
 
-        public void Deploy(MavenReference reference)
+        public IEnumerable<string> Deploy(MavenReference reference)
         {
             this.UnzipArtifact(reference);
 
             var artifactDeployments = _deployments.Where(d => d.ArtifactId == reference.ArtifactId);
             var artifactDirectory = reference.GetArtifactDirectory(_nmvnPackageRoot);
 
+            IEnumerable<string> allDeployedFiles = Enumerable.Empty<string>();
+
             foreach (var deployment in artifactDeployments)
             {
-                Deploy(artifactDirectory, deployment);
+                var deployedFiles = Deploy(artifactDirectory, deployment);
+                if (deployedFiles != null)
+                    allDeployedFiles = allDeployedFiles.Concat(deployedFiles);
             }
+
+            return allDeployedFiles;
         }
 
         private void UnzipArtifact(MavenReference reference)
@@ -51,10 +58,11 @@ namespace NMaven
             }
         }
 
-        private void Deploy(DirectoryInfo packageDirectory, NMavenDeployment deployment)
+        private IList<string> Deploy(DirectoryInfo packageDirectory, NMavenDeployment deployment)
         {
             try
             {
+                List<string> deployedFiles = new List<string>();
                 var destinationRoot = Directory.CreateDirectory(deployment.Destination);
 
                 _logger.LogMessage($"Deploying {deployment.Name} for artifact {deployment.ArtifactId} into {destinationRoot.FullName}.");
@@ -87,12 +95,18 @@ namespace NMaven
                     _logger.LogMessage($"- Copying {file.FullName} -> {destinationFileName}");
 
                     File.Copy(file.FullName, destinationFileName, overwrite: true);
+
+                    deployedFiles.Add(destinationFileName);
                 }
+
+                return deployedFiles;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Cannot execute {deployment.Name} deployment: ${ex.Message}.");
             }
+
+            return null;
         }
     }
 }
