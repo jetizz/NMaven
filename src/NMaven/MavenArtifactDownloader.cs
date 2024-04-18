@@ -97,7 +97,8 @@ namespace NMaven
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException($"Error while downloading the artifact ({(int)response.StatusCode} - {response.ReasonPhrase})");
+                var responseBody = await response.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"Error downloading the artifact ({(int)response.StatusCode} {response.ReasonPhrase}): {responseBody}");
             }
 
             var content = await response.Content.ReadAsByteArrayAsync();
